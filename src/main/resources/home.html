@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khảo sát khách hàng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+
+        /* Form Container Styling */
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            background-color: #fdfdfd;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Radio Buttons and Checkbox Styling */
+        input[type="radio"], input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        /* Error Messages Styling */
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        /* Submit Button Styling */
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Result Display Styling */
+        #result {
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #28a745;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                margin: 10px;
+            }
+            form {
+                padding: 15px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+
+</head>
+<body>
+
+<h1>Khảo sát khách hàng</h1>
+
+<form id="surveyForm">
+    <label for="hoten">Họ và Tên:</label>
+    <input type="text" id="hoten" name="hoten" placeholder="Nhập tên khách hàng">
+    <div id="hotenError" class="error"></div>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email"  placeholder="Nhập email">
+    <div id="emailError" class="error"></div>
+
+    <label for="danhgia">Đánh giá tổng quát:</label>
+    <select id="danhgia" name="danhgia" >
+        <option value="">-- Chọn --</option>
+        <option value="rất hài lòng">Rất hài lòng</option>
+        <option value="hài lòng">Hài lòng</option>
+        <option value="bình thường">Bình thường</option>
+        <option value="không hài lòng">Không hài lòng</option>
+    </select>
+    <div id="danhgiaError" class="error"></div>
+
+    <label for="dexuat">Đề xuất cải thiện (Tùy chọn):</label>
+    <textarea id="dexuat" name="dexuat" rows="4" placeholder="Xin mời nhập cải thiện"></textarea>
+
+    <label>Bạn có giới thiệu chúng tôi với người khác không?</label>
+    <input type="radio" id="gioithieu" name="gioithieu" value="có" >
+    <label for="gioithieu">Có</label>
+    <input type="radio" id="recommend" name="gioithieu" value="không" >
+    <label for="gioithieu">Không</label>
+    <div id="gioithieuError" class="error"></div>
+
+    <label for="khuyenmai">
+        <input type="checkbox" id="khuyenmai" name="khuyenmai" >
+        Bạn có muốn nhận khuyến mãi qua email không ?
+    </label>
+    <div id="khuyenmaiError" class="error"></div>
+
+    <button id="check" style="width: 450px;" type="submit">Gửi</button>
+</form>
+
+<div id="result"></div>
+
+<script>
+    document.getElementById('surveyForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        clearErrors();
+
+        // Validate form fields
+        const hoten = document.getElementById('hoten').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const danhgia = document.getElementById('danhgia').value;
+        const dexuat = document.getElementById('dexuat').value.trim();
+        const gioithieu = document.querySelector('input[name="gioithieu"]:checked');
+        const khuyenmai = document.getElementById('khuyenmai').checked;
+
+        let isValid = true;
+
+        // Check Họ và Tên
+        if (!hoten) {
+            isValid = false;
+            document.getElementById('hotenError').textContent = 'Vui lòng nhập họ và tên.';
+        }
+
+        // Check Email
+        if (!email || !validateEmail(email)) {
+            isValid = false;
+            document.getElementById('emailError').textContent = 'Vui lòng nhập email hợp lệ.';
+        }
+
+        // Check Đánh giá tổng quát
+        if (!danhgia) {
+            isValid = false;
+            document.getElementById('danhgiaError').textContent = 'Vui lòng chọn đánh giá tổng quát.';
+        }
+
+        // Check Bạn có giới thiệu chúng tôi với người khác không?
+        if (!gioithieu) {
+            isValid = false;
+            document.getElementById('gioithieuError').textContent = 'Vui lòng chọn một tùy chọn trong "Bạn có giới thiệu chúng tôi với người khác không?".';
+        }
+
+        // Check Khuyến mãi (Checkbox)
+        if (!khuyenmai) {
+            document.getElementById('khuyenmaiError').textContent = 'Bạn chưa chọn nhận khuyến mãi.';
+        }
+
+        if (isValid) {
+            document.getElementById('result').textContent = 'Form hợp lệ! Đang lưu dữ liệu...';
+        } else {
+            document.getElementById('result').textContent = 'Có lỗi xảy ra, vui lòng kiểm tra lại.';
+        }
+    });
+
+    function validateEmail(email) {
+        const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        return re.test(email);
+    }
+
+    function clearErrors() {
+        const errors = document.querySelectorAll('.error');
+        errors.forEach(error => error.textContent = '');
+    }
+</script>
+</body>
+</html>
